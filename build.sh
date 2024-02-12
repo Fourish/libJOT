@@ -1,11 +1,11 @@
 #!/bin/bash
 
 # set build variables
-CMAKE_AR=D:/build-essential/msys64/ucrt64/bin/ar.exe
-CMAKE_MAKE_PROGRAM=D:/build-essential/msys64/usr/bin/make.exe
-CMAKE_PREFIX_PATH=D:/build-essential/msys64/ucrt64
-CMAKE_C_COMPILER=D:/build-essential/msys64/ucrt64/bin/gcc.exe 
-CMAKE_CXX_COMPILER=D:/build-essential/msys64/ucrt64/bin/g++.exe
+CMAKE_AR=
+CMAKE_MAKE_PROGRAM=
+CMAKE_PREFIX_PATH=
+CMAKE_C_COMPILER=
+CMAKE_CXX_COMPILER=
 CMAKE_BUILD_TYPE=Release
 CMAKE_EXPORT_COMPILE_COMMANDS=ON
 
