@@ -1,0 +1,91 @@
+cmake_minimum_required(VERSION 3.20.0)
+
+project(libJOT VERSION 0.1.0 LANGUAGES CXX)
+
+# set the C++ standard to C++20
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+# set the build options
+set(BUILD_SHARED_LIBS OFF)
+set(BUILD_STATIC_LIBS ON)
+
+# print the build options
+message("\n")
+message("*---------START LIBJOT BUILD---------*")
+message("** BUILD_SHARED_LIBS: ${BUILD_SHARED_LIBS}           **")
+message("** BUILD_STATIC_LIBS: ${BUILD_STATIC_LIBS}            **")
+message("** CMAKE_CXX_STANDARD: ${CMAKE_CXX_STANDARD}           **")
+message("** CMAKE_CXX_STANDARD_REQUIRED: ${CMAKE_CXX_STANDARD_REQUIRED}  **")
+
+if (${CMAKE_BUILD_TYPE} STREQUAL "")
+    message("** CMAKE_BUILD_TYPE: NONE **")
+elseif(${CMAKE_BUILD_TYPE} STREQUAL "Release")
+    message("** CMAKE_BUILD_TYPE: ${CMAKE_BUILD_TYPE}        **")
+elseif(${CMAKE_BUILD_TYPE} STREQUAL "Debug")
+    message("** CMAKE_BUILD_TYPE: ${CMAKE_BUILD_TYPE}          **")
+elseif(${CMAKE_BUILD_TYPE} STREQUAL "RelWithDebInfo")
+    message("** CMAKE_BUILD_TYPE: ${CMAKE_BUILD_TYPE} **")
+elseif(${CMAKE_BUILD_TYPE} STREQUAL "MinSizeRel")
+    message("** CMAKE_BUILD_TYPE: ${CMAKE_BUILD_TYPE}     **")
+endif()
+
+message("*-----------------------------------*")
+message("\n")
+
+# find all source files
+file(GLOB JOT_SOURCE_FILES
+    "${CMAKE_SOURCE_DIR}/src/*.cc"
+)
+file(GLOB JOT_HEADER_FILES
+    "${CMAKE_SOURCE_DIR}/src/*.h"
+)
+
+# create the object library
+add_library(LIBJOT_OBJECT OBJECT
+    ${JOT_SOURCE_FILES}
+    ${JOT_HEADER_FILES}
+)
+set_target_properties(LIBJOT_OBJECT
+    PROPERTIES
+    POSITION_INDEPENDENT_CODE ON
+)
+
+# build the static library
+if(BUILD_STATIC_LIBS)
+    message("** Building static library **")
+    add_library(LIBJOT_STATIC STATIC
+        $<TARGET_OBJECTS:LIBJOT_OBJECT>
+    )
+    set_target_properties(LIBJOT_STATIC
+        PROPERTIES
+        RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/libJOT/lib"
+        LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/libJOT/lib"
+        ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/libJOT/lib"
+        PREFIX "lib"
+        OUTPUT_NAME "JOT"
+        SUFFIX ".lib"
+    )
+endif()
+
+# build the shared library
+if(BUILD_SHARED_LIBS)
+    message("**Building shared library**")
+    add_library(LIBJOT_SHARED
+        SHARED
+        $<TARGET_OBJECTS:LIBJOT_OBJECT>
+    )
+    set_target_properties(LIBJOT_SHARED
+        PROPERTIES
+        RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/libJOT/lib"
+        LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/libJOT/lib"
+        ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/libJOT/lib"
+        PREFIX "lib"
+        OUTPUT_NAME "JOT"
+        SUFFIX ".dll"
+    )
+endif()
+
+# copy the header files to the build directory
+message("** Copying header files to ${CMAKE_BINARY_DIR}/libJOT/include **")
+file(COPY ${JOT_HEADER_FILES} DESTINATION "${CMAKE_BINARY_DIR}/libJOT/include")
