@@ -30,10 +30,10 @@ message("** LIBJOT_OUTPUT_DIRECTORY: ${LIBJOT_OUTPUT_DIRECTORY}")
 
 # find all source files
 file(GLOB LIBJOT_SOURCE_FILES
-    "${CMAKE_SOURCE_DIR}/src/*.cc"
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/*.cc"
 )
 file(GLOB LIBJOT_HEADER_FILES
-    "${CMAKE_SOURCE_DIR}/src/*.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/*.h"
 )
 
 # create the object library
