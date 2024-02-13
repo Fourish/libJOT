@@ -7,44 +7,39 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # set the build options
-set(BUILD_SHARED_LIBS OFF)
-set(BUILD_STATIC_LIBS ON)
+set(LIBJOT_BUILD_SHARED OFF)
+set(LIBJOT_BUILD_STATIC ON)
+set(LIBJOT_BUILD_FULL OFF)
 
-# print the build options
+# set output directories
+set(LIBJOT_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/libJOT")
+set(LIBJOT_SHARED_OUTPUT_DIRECTORY "${LIBJOT_OUTPUT_DIRECTORY}/bin")
+set(LIBJOT_STATIC_OUTPUT_DIRECTORY "${LIBJOT_OUTPUT_DIRECTORY}/lib")
+set(LIBJOT_INCLUDE_OUTPUT_DIRECTORY "${LIBJOT_OUTPUT_DIRECTORY}/include")
+
+# print the build information
 message("\n")
-message("*---------START LIBJOT BUILD---------*")
-message("** BUILD_SHARED_LIBS: ${BUILD_SHARED_LIBS}           **")
-message("** BUILD_STATIC_LIBS: ${BUILD_STATIC_LIBS}            **")
-message("** CMAKE_CXX_STANDARD: ${CMAKE_CXX_STANDARD}           **")
-message("** CMAKE_CXX_STANDARD_REQUIRED: ${CMAKE_CXX_STANDARD_REQUIRED}  **")
-
-if (${CMAKE_BUILD_TYPE} STREQUAL "")
-    message("** CMAKE_BUILD_TYPE: NONE **")
-elseif(${CMAKE_BUILD_TYPE} STREQUAL "Release")
-    message("** CMAKE_BUILD_TYPE: ${CMAKE_BUILD_TYPE}        **")
-elseif(${CMAKE_BUILD_TYPE} STREQUAL "Debug")
-    message("** CMAKE_BUILD_TYPE: ${CMAKE_BUILD_TYPE}          **")
-elseif(${CMAKE_BUILD_TYPE} STREQUAL "RelWithDebInfo")
-    message("** CMAKE_BUILD_TYPE: ${CMAKE_BUILD_TYPE} **")
-elseif(${CMAKE_BUILD_TYPE} STREQUAL "MinSizeRel")
-    message("** CMAKE_BUILD_TYPE: ${CMAKE_BUILD_TYPE}     **")
-endif()
-
-message("*-----------------------------------*")
-message("\n")
+message("*----------START LIBJOT BUILD----------*")
+message("** CMAKE_CXX_STANDARD: ${CMAKE_CXX_STANDARD}")
+message("** CMAKE_CXX_STANDARD_REQUIRED: ${CMAKE_CXX_STANDARD_REQUIRED}")
+message("** CMAKE_BUILD_TYPE: ${CMAKE_BUILD_TYPE}")
+message("** BUILD_SHARED_LIBS: ${LIBJOT_BUILD_SHARED}")
+message("** BUILD_STATIC_LIBS: ${LIBJOT_BUILD_STATIC}")
+message("** BUILD_FULL: ${LIBJOT_BUILD_FULL}")
+message("** LIBJOT_OUTPUT_DIRECTORY: ${LIBJOT_OUTPUT_DIRECTORY}")
 
 # find all source files
-file(GLOB JOT_SOURCE_FILES
+file(GLOB LIBJOT_SOURCE_FILES
     "${CMAKE_SOURCE_DIR}/src/*.cc"
 )
-file(GLOB JOT_HEADER_FILES
+file(GLOB LIBJOT_HEADER_FILES
     "${CMAKE_SOURCE_DIR}/src/*.h"
 )
 
 # create the object library
 add_library(LIBJOT_OBJECT OBJECT
-    ${JOT_SOURCE_FILES}
-    ${JOT_HEADER_FILES}
+    ${LIBJOT_SOURCE_FILES}
+    ${LIBJOT_HEADER_FILES}
 )
 set_target_properties(LIBJOT_OBJECT
     PROPERTIES
@@ -52,16 +47,14 @@ set_target_properties(LIBJOT_OBJECT
 )
 
 # build the static library
-if(BUILD_STATIC_LIBS)
+if(LIBJOT_BUILD_STATIC)
     message("** Building static library **")
     add_library(LIBJOT_STATIC STATIC
         $<TARGET_OBJECTS:LIBJOT_OBJECT>
     )
     set_target_properties(LIBJOT_STATIC
         PROPERTIES
-        RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/libJOT/lib"
-        LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/libJOT/lib"
-        ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/libJOT/lib"
+        ARCHIVE_OUTPUT_DIRECTORY ${LIBJOT_STATIC_OUTPUT_DIRECTORY}
         PREFIX "lib"
         OUTPUT_NAME "JOT"
         SUFFIX ".lib"
@@ -69,7 +62,7 @@ if(BUILD_STATIC_LIBS)
 endif()
 
 # build the shared library
-if(BUILD_SHARED_LIBS)
+if(LIBJOT_BUILD_SHARED)
     message("**Building shared library**")
     add_library(LIBJOT_SHARED
         SHARED
@@ -77,9 +70,7 @@ if(BUILD_SHARED_LIBS)
     )
     set_target_properties(LIBJOT_SHARED
         PROPERTIES
-        RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/libJOT/lib"
-        LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/libJOT/lib"
-        ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/libJOT/lib"
+        LIBRARY_OUTPUT_DIRECTORY ${LIBJOT_SHARED_OUTPUT_DIRECTORY}
         PREFIX "lib"
         OUTPUT_NAME "JOT"
         SUFFIX ".dll"
@@ -87,5 +78,10 @@ if(BUILD_SHARED_LIBS)
 endif()
 
 # copy the header files to the build directory
-message("** Copying header files to ${CMAKE_BINARY_DIR}/libJOT/include **")
-file(COPY ${JOT_HEADER_FILES} DESTINATION "${CMAKE_BINARY_DIR}/libJOT/include")
+if(LIBJOT_BUILD_FULL)
+    message("** Copying header files to ${LIBJOT_INCLUDE_OUTPUT_DIRECTORY}")
+    file(COPY ${JOT_HEADER_FILES} DESTINATION ${LIBJOT_INCLUDE_OUTPUT_DIRECTORY})
+endif()
+
+message("*-----------END LIBJOT BUILD-----------*")
+message("\n")
