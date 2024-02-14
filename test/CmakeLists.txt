@@ -1,0 +1,12 @@
+# find test files
+file(GLOB LIBJOT_TEST_FILES
+    "${LIBJOT_TEST_DIRECTORY}/*.cc"
+)
+
+message(${LIBJOT_TEST_FILES})
+
+add_executable(LIBJOT_TEST ${LIBJOT_TEST_FILES})
+
+target_link_libraries(LIBJOT_TEST LIBJOT_SHARED)
+
+#file(COPY "${CMAKE_BINARY_DIR}/bin/*.dll" DESTINATION "${CMAKE_BINARY_DIR}/test")

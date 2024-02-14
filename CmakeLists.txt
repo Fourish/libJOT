@@ -7,11 +7,14 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # set the build options
-set(LIBJOT_BUILD_SHARED OFF)
-set(LIBJOT_BUILD_STATIC ON)
-set(LIBJOT_BUILD_FULL OFF)
+option(LIBJOT_BUILD_SHARED OFF)
+option(LIBJOT_BUILD_STATIC ON)
+option(LIBJOT_BUILD_FULL ON)
+option(LIBJOT_TEST OFF)
 
 # set output directories
+set(LIBJOT_SOURCE_DIRECTORY "${CMAKE_SOURCE_DIR}/src")
+set(LIBJOT_TEST_DIRECTORY "${CMAKE_SOURCE_DIR}/test")
 set(LIBJOT_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}")
 set(LIBJOT_SHARED_OUTPUT_DIRECTORY "${LIBJOT_OUTPUT_DIRECTORY}/bin")
 set(LIBJOT_STATIC_OUTPUT_DIRECTORY "${LIBJOT_OUTPUT_DIRECTORY}/lib")
@@ -28,60 +31,17 @@ message("** BUILD_STATIC_LIBS: ${LIBJOT_BUILD_STATIC}")
 message("** BUILD_FULL: ${LIBJOT_BUILD_FULL}")
 message("** LIBJOT_OUTPUT_DIRECTORY: ${LIBJOT_OUTPUT_DIRECTORY}")
 
-# find all source files
-file(GLOB LIBJOT_SOURCE_FILES
-    "${CMAKE_CURRENT_SOURCE_DIR}/src/*.cc"
-)
-file(GLOB LIBJOT_HEADER_FILES
-    "${CMAKE_CURRENT_SOURCE_DIR}/src/*.h"
-)
-
-# create the object library
-add_library(LIBJOT_OBJECT OBJECT
-    ${LIBJOT_SOURCE_FILES}
-    ${LIBJOT_HEADER_FILES}
-)
-set_target_properties(LIBJOT_OBJECT
-    PROPERTIES
-    POSITION_INDEPENDENT_CODE ON
-)
-
-# build the static library
-if(LIBJOT_BUILD_STATIC)
-    message("** Building static library **")
-    add_library(LIBJOT_STATIC STATIC
-        $<TARGET_OBJECTS:LIBJOT_OBJECT>
-    )
-    set_target_properties(LIBJOT_STATIC
-        PROPERTIES
-        ARCHIVE_OUTPUT_DIRECTORY ${LIBJOT_STATIC_OUTPUT_DIRECTORY}
-        PREFIX "lib"
-        OUTPUT_NAME "JOT"
-        SUFFIX ".lib"
-    )
-endif()
-
-# build the shared library
-if(LIBJOT_BUILD_SHARED)
-    message("**Building shared library**")
-    add_library(LIBJOT_SHARED
-        SHARED
-        $<TARGET_OBJECTS:LIBJOT_OBJECT>
-    )
-    set_target_properties(LIBJOT_SHARED
-        PROPERTIES
-        LIBRARY_OUTPUT_DIRECTORY ${LIBJOT_SHARED_OUTPUT_DIRECTORY}
-        PREFIX "lib"
-        OUTPUT_NAME "JOT"
-        SUFFIX ".dll"
-    )
-endif()
-
-# copy the header files to the build directory
-if(LIBJOT_BUILD_FULL)
-    message("** Copying header files to ${LIBJOT_INCLUDE_OUTPUT_DIRECTORY}")
-    file(COPY ${JOT_HEADER_FILES} DESTINATION ${LIBJOT_INCLUDE_OUTPUT_DIRECTORY})
-endif()
+include_directories(${LIBJOT_SOURCE_DIRECTORY})
+add_subdirectory(${LIBJOT_SOURCE_DIRECTORY})
 
 message("*-----------END LIBJOT BUILD-----------*")
+
+# add the test directory
+
+if(LIBJOT_TEST)
+    message("*----------START LIBJOT TEST-----------*")
+    add_subdirectory(test)
+    message("*-----------END LIBJOT TEST------------*")
+endif()
+
 message("\n")
