@@ -2,11 +2,35 @@
 #include <cstddef>
 #include <cstring>
 #include <ctime>
+#include <sstream>
 #include <stdexcept>
+#include <vector>
+#include <windows.h>
 
 namespace JOT {
-std::chrono::high_resolution_clock::time_point getTimeStamp() {
-  return std::chrono::high_resolution_clock::now();
+size_t getTimeStamp() {
+  return std::chrono::duration_cast<std::chrono::nanoseconds>(
+             std::chrono::high_resolution_clock::now().time_since_epoch())
+      .count();
+}
+
+double getTimeStamp_high_res_system() {
+  LARGE_INTEGER counter;
+  static LARGE_INTEGER frequency;
+  static bool isFrequencyInitialized = false;
+  LARGE_INTEGER timeStamp;
+
+  if (!isFrequencyInitialized) {
+    QueryPerformanceFrequency(&frequency);
+    isFrequencyInitialized = true;
+  }
+
+  QueryPerformanceCounter(&counter);
+
+  double timeInNanoseconds =
+      static_cast<double>(counter.QuadPart * 1e9) / frequency.QuadPart;
+      
+  return timeInNanoseconds;
 }
 
 size_t strToTimePoint(const char *timeString) {
@@ -59,6 +83,47 @@ size_t strToTimePoint(const char *timeString) {
   } // if the timeArray is not the right size, throw an error
 
   delete[] timeArray;
+
+  while (timePoint >= 86400) {
+    timePoint -= 86400;
+  } // if the timePoint is greater than 86400, subtract 86400 until it is less
+    // than 86400 (i.e. until it is the number of seconds since midnight)
+
+  return timePoint;
+}
+
+size_t strToTimePoint(std::string &timeString) {
+  if (timeString.length() > 8) {
+    throw std::invalid_argument("Time string is too long");
+  } // if the string is too long, throw an error
+
+  std::vector<int> timeArray;
+  std::istringstream iss(timeString);
+  std::string token;
+
+  while (std::getline(iss, token, ':')) {
+    if (token.size() != 2 || !std::isdigit(token[0]) ||
+        !std::isdigit(token[1])) {
+      throw std::invalid_argument("Time string contains non-numeric characters "
+                                  "or colons in the wrong places");
+    } // if the string contains non-numeric characters or colons in the wrong
+      // places, throw an error
+    timeArray.push_back(std::stoi(token));
+  }
+
+  size_t timePoint = 0;
+  if (timeArray.size() == 2) {
+    timePoint = timeArray[0] * 3600 + timeArray[1] * 60;
+  } else if (timeArray.size() == 3) {
+    timePoint = timeArray[0] * 3600 + timeArray[1] * 60 + timeArray[2];
+  } else {
+    throw std::invalid_argument("Time string is not the right size");
+  } // if the timeArray is not the right size, throw an error
+
+  while (timePoint >= 86400) {
+    timePoint -= 86400;
+  } // if the timePoint is greater than 86400, subtract 86400 until it is less
+    // than 86400 (i.e. until it is the number of seconds since midnight)
 
   return timePoint;
 }

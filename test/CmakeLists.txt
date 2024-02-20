@@ -1,12 +1,11 @@
 # find test files
-file(GLOB LIBJOT_TEST_FILES
-    "${LIBJOT_TEST_DIRECTORY}/*.cc"
-)
+set(LIBJOT_TEST_HOOK_FILES test_hook.cc)
+set(LIBJOT_TEST_TIME_FILES test_time.cc)
 
-message(${LIBJOT_TEST_FILES})
+add_executable(LIBJOT_TEST_HOOK ${LIBJOT_TEST_HOOK_FILES})
+add_executable(LIBJOT_TEST_TIME ${LIBJOT_TEST_TIME_FILES})
 
-add_executable(LIBJOT_TEST ${LIBJOT_TEST_FILES})
-
-target_link_libraries(LIBJOT_TEST LIBJOT_SHARED)
+target_link_libraries(LIBJOT_TEST_HOOK LIBJOT_SHARED)
+target_link_libraries(LIBJOT_TEST_TIME LIBJOT_SHARED)
 
 #file(COPY "${CMAKE_BINARY_DIR}/bin/*.dll" DESTINATION "${CMAKE_BINARY_DIR}/test")

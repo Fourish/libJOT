@@ -4,10 +4,13 @@
 #include <chrono>
 #include <ctime>
 #include <functional>
+#include <windows.h>
 
 namespace JOT {
 size_t strToTimePoint(const char *timeString);
-std::chrono::high_resolution_clock::time_point getTimeStamp();
+size_t strToTimePoint(std::string &timeString);
+size_t getTimeStamp();
+double getTimeStamp_high_res_system();
 
 template <typename ReturnType>
 ReturnType getFunctionRuntime(std::function<ReturnType()> function,

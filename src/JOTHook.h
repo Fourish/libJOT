@@ -5,6 +5,7 @@
 #include <cstdint>
 #include <vector>
 #include <windows.h>
+#include <chrono>
 
 namespace JOT {
 typedef struct last_event {
@@ -14,6 +15,24 @@ typedef struct last_event {
   long y;
   long key;
 } last_event;
+
+typedef struct last_event_high_res {
+  double time;
+  uint16_t type;
+  long x;
+  long y;
+  long key;
+} last_event_high_res;
+
+/*
+typedef struct last_event_high_res {
+  LARGE_INTEGER time;
+  uint16_t type;
+  long x;
+  long y;
+  long key;
+} last_event_high_res;
+*/
 
 struct hook_type {
   uint8_t type;
@@ -42,6 +61,8 @@ private:
 };
 
 LRESULT CALLBACK printMouseEvent(int nCode, WPARAM wParam, LPARAM lParam);
+LRESULT CALLBACK printMouseEvent_high_res(int nCode, WPARAM wParam, LPARAM lParam);
+LRESULT CALLBACK printMouseEvent_high_res_stream(int nCode, WPARAM wParam, LPARAM lParam);
 LRESULT CALLBACK recordMouseEvent(int nCode, WPARAM wParam, LPARAM lParam);
 LRESULT CALLBACK printKeyboardEvent(int nCode, WPARAM wParam, LPARAM lParam);
 } // namespace JOT

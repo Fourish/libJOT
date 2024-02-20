@@ -5,7 +5,7 @@
 #include <minwindef.h>
 #include <stdexcept>
 #include <thread>
-
+#include <iostream>
 
 class JOT::base_hook &JOT::base_hook::getInstance() {
   static base_hook instance;
@@ -161,6 +161,239 @@ LRESULT CALLBACK JOT::printMouseEvent(int nCode, WPARAM wParam, LPARAM lParam) {
         lastEvent.x = pMouseStruct->pt.x;
         lastEvent.y = pMouseStruct->pt.y;
         lastEvent.time = pMouseStruct->time;
+        break;
+      }
+      }
+    }
+  });
+
+  eventThread.detach();
+
+  return CallNextHookEx(nullptr, nCode, wParam, lParam);
+}
+
+LRESULT CALLBACK JOT::printMouseEvent_high_res(int nCode, WPARAM wParam,
+                                               LPARAM lParam) {
+  static last_event_high_res lastEvent{};
+
+  double currentTime = getTimeStamp_high_res_system();
+
+  std::thread eventThread([&]() {
+    MSLLHOOKSTRUCT *pMouseStruct = reinterpret_cast<MSLLHOOKSTRUCT *>(lParam);
+    if (nCode == 0 && (wParam == WM_LBUTTONDOWN || wParam == WM_LBUTTONUP ||
+                       wParam == WM_LBUTTONDBLCLK || wParam == WM_RBUTTONDOWN ||
+                       wParam == WM_RBUTTONUP || wParam == WM_RBUTTONDBLCLK ||
+                       wParam == WM_MBUTTONDOWN || wParam == WM_MBUTTONUP ||
+                       wParam == WM_MBUTTONDBLCLK || wParam == WM_MOUSEMOVE)) {
+      switch (wParam) {
+      case WM_LBUTTONDOWN: {
+        printf("Left mouse button down (%i,%i) time : %lld\n",
+               pMouseStruct->pt.x, pMouseStruct->pt.y, currentTime);
+        lastEvent.type = WM_LBUTTONDOWN;
+        lastEvent.x = pMouseStruct->pt.x;
+        lastEvent.y = pMouseStruct->pt.y;
+        lastEvent.time = currentTime;
+        break;
+      }
+      case WM_LBUTTONUP: {
+        printf("Left mouse button up (%i,%i) time : %lld\n", pMouseStruct->pt.x,
+               pMouseStruct->pt.y, currentTime);
+        lastEvent.type = WM_LBUTTONUP;
+        lastEvent.x = pMouseStruct->pt.x;
+        lastEvent.y = pMouseStruct->pt.y;
+        lastEvent.time = currentTime;
+        break;
+      }
+      case WM_LBUTTONDBLCLK: {
+        printf("Left mouse button double click (%i,%i) time : %lld\n",
+               pMouseStruct->pt.x, pMouseStruct->pt.y,
+               currentTime);
+        lastEvent.type = WM_LBUTTONDBLCLK;
+        lastEvent.x = pMouseStruct->pt.x;
+        lastEvent.y = pMouseStruct->pt.y;
+        lastEvent.time = currentTime;
+        break;
+      }
+      case WM_RBUTTONDOWN: {
+        printf("Right mouse button down (%i,%i) time : %lld\n",
+               pMouseStruct->pt.x, pMouseStruct->pt.y,
+               currentTime);
+        lastEvent.type = WM_RBUTTONDOWN;
+        lastEvent.x = pMouseStruct->pt.x;
+        lastEvent.y = pMouseStruct->pt.y;
+        lastEvent.time = currentTime;
+        break;
+      }
+      case WM_RBUTTONDBLCLK: {
+        printf("Right mouse button double click (%i,%i) time : %lld\n",
+               pMouseStruct->pt.x, pMouseStruct->pt.y,
+               currentTime);
+        lastEvent.type = WM_RBUTTONDBLCLK;
+        lastEvent.x = pMouseStruct->pt.x;
+        lastEvent.y = pMouseStruct->pt.y;
+        lastEvent.time = currentTime;
+        break;
+      }
+      case WM_RBUTTONUP: {
+        printf("Right mouse button up (%i,%i) time : %lld\n",
+               pMouseStruct->pt.x, pMouseStruct->pt.y,
+               currentTime);
+        lastEvent.type = WM_RBUTTONUP;
+        lastEvent.x = pMouseStruct->pt.x;
+        lastEvent.y = pMouseStruct->pt.y;
+        lastEvent.time = currentTime;
+        break;
+      }
+      case WM_MBUTTONDOWN: {
+        printf("Middle mouse button down (%i,%i) time : %lld\n",
+               pMouseStruct->pt.x, pMouseStruct->pt.y,
+               currentTime);
+        lastEvent.type = WM_MBUTTONDOWN;
+        lastEvent.x = pMouseStruct->pt.x;
+        lastEvent.y = pMouseStruct->pt.y;
+        lastEvent.time = currentTime;
+        break;
+      }
+      case WM_MBUTTONDBLCLK: {
+        printf("Middle mouse button double click (%i,%i) time : %lld\n",
+               pMouseStruct->pt.x, pMouseStruct->pt.y,
+               currentTime);
+        lastEvent.type = WM_MBUTTONDBLCLK;
+        lastEvent.x = pMouseStruct->pt.x;
+        lastEvent.y = pMouseStruct->pt.y;
+        lastEvent.time = currentTime;
+        break;
+      }
+      case WM_MBUTTONUP: {
+        printf("Middle mouse button up (%i,%i) time : %lld\n",
+               pMouseStruct->pt.x, pMouseStruct->pt.y,
+               currentTime);
+        lastEvent.type = WM_MBUTTONUP;
+        lastEvent.x = pMouseStruct->pt.x;
+        lastEvent.y = pMouseStruct->pt.y;
+        lastEvent.time = currentTime;
+        break;
+      }
+      case WM_MOUSEMOVE: {
+        if (lastEvent.type == WM_MOUSEMOVE &&
+            lastEvent.x == pMouseStruct->pt.x &&
+            lastEvent.y == pMouseStruct->pt.y) {
+          break;
+        }
+        printf("Mouse move (%i,%i) time : %lld\n", pMouseStruct->pt.x,
+               pMouseStruct->pt.y, currentTime);
+        lastEvent.type = WM_MOUSEMOVE;
+        lastEvent.x = pMouseStruct->pt.x;
+        lastEvent.y = pMouseStruct->pt.y;
+        lastEvent.time = currentTime;
+        break;
+      }
+      }
+    }
+  });
+
+  eventThread.detach();
+
+  return CallNextHookEx(nullptr, nCode, wParam, lParam);
+}
+
+LRESULT CALLBACK JOT::printMouseEvent_high_res_stream(int nCode, WPARAM wParam,
+                                               LPARAM lParam) {
+  static last_event_high_res lastEvent{};
+
+  double currentTime = getTimeStamp_high_res_system();
+
+  std::thread eventThread([&]() {
+    MSLLHOOKSTRUCT *pMouseStruct = reinterpret_cast<MSLLHOOKSTRUCT *>(lParam);
+    if (nCode == 0 && (wParam == WM_LBUTTONDOWN || wParam == WM_LBUTTONUP ||
+                       wParam == WM_LBUTTONDBLCLK || wParam == WM_RBUTTONDOWN ||
+                       wParam == WM_RBUTTONUP || wParam == WM_RBUTTONDBLCLK ||
+                       wParam == WM_MBUTTONDOWN || wParam == WM_MBUTTONUP ||
+                       wParam == WM_MBUTTONDBLCLK || wParam == WM_MOUSEMOVE)) {
+      switch (wParam) {
+      case WM_LBUTTONDOWN: {
+        std::cout <<"Left mouse button down (" << pMouseStruct->pt.x << "," << pMouseStruct->pt.y << ") time : " << currentTime << "\n";
+        lastEvent.type = WM_LBUTTONDOWN;
+        lastEvent.x = pMouseStruct->pt.x;
+        lastEvent.y = pMouseStruct->pt.y;
+        lastEvent.time = currentTime;
+        break;
+      }
+      case WM_LBUTTONUP: {
+        std::cout <<"Left mouse button up (" << pMouseStruct->pt.x << "," << pMouseStruct->pt.y << ") time : " << currentTime << "\n";
+        lastEvent.type = WM_LBUTTONUP;
+        lastEvent.x = pMouseStruct->pt.x;
+        lastEvent.y = pMouseStruct->pt.y;
+        lastEvent.time = currentTime;
+        break;
+      }
+      case WM_LBUTTONDBLCLK: {
+        std::cout <<"Left mouse button double click (" << pMouseStruct->pt.x << "," << pMouseStruct->pt.y << ") time : " << currentTime << "\n";
+        lastEvent.type = WM_LBUTTONDBLCLK;
+        lastEvent.x = pMouseStruct->pt.x;
+        lastEvent.y = pMouseStruct->pt.y;
+        lastEvent.time = currentTime;
+        break;
+      }
+      case WM_RBUTTONDOWN: {
+        std::cout <<"Right mouse button down (" << pMouseStruct->pt.x << "," << pMouseStruct->pt.y << ") time : " << currentTime << "\n";
+        lastEvent.type = WM_RBUTTONDOWN;
+        lastEvent.x = pMouseStruct->pt.x;
+        lastEvent.y = pMouseStruct->pt.y;
+        lastEvent.time = currentTime;
+        break;
+      }
+      case WM_RBUTTONDBLCLK: {
+        std::cout <<"Right mouse button double click (" << pMouseStruct->pt.x << "," << pMouseStruct->pt.y << ") time : " << currentTime << "\n";
+        lastEvent.type = WM_RBUTTONDBLCLK;
+        lastEvent.x = pMouseStruct->pt.x;
+        lastEvent.y = pMouseStruct->pt.y;
+        lastEvent.time = currentTime;
+        break;
+      }
+      case WM_RBUTTONUP: {
+        std::cout <<"Right mouse button up (" << pMouseStruct->pt.x << "," << pMouseStruct->pt.y << ") time : " << currentTime << "\n";
+        lastEvent.type = WM_RBUTTONUP;
+        lastEvent.x = pMouseStruct->pt.x;
+        lastEvent.y = pMouseStruct->pt.y;
+        lastEvent.time = currentTime;
+        break;
+      }
+      case WM_MBUTTONDOWN: {
+        std::cout <<"Middle mouse button down (" << pMouseStruct->pt.x << "," << pMouseStruct->pt.y << ") time : " << currentTime << "\n";
+        lastEvent.type = WM_MBUTTONDOWN;
+        lastEvent.x = pMouseStruct->pt.x;
+        lastEvent.y = pMouseStruct->pt.y;
+        lastEvent.time = currentTime;
+        break;
+      }
+      case WM_MBUTTONDBLCLK: {
+        std::cout <<"Middle mouse button double click (" << pMouseStruct->pt.x << "," << pMouseStruct->pt.y << ") time : " << currentTime << "\n";
+        lastEvent.type = WM_MBUTTONDBLCLK;
+        lastEvent.x = pMouseStruct->pt.x;
+        lastEvent.y = pMouseStruct->pt.y;
+        lastEvent.time = currentTime;
+        break;
+      }
+      case WM_MBUTTONUP: {
+        std::cout <<"Middle mouse button up (" << pMouseStruct->pt.x << "," << pMouseStruct->pt.y << ") time : " << currentTime << "\n";
+        lastEvent.type = WM_MBUTTONUP;
+        lastEvent.x = pMouseStruct->pt.x;
+        lastEvent.y = pMouseStruct->pt.y;
+        lastEvent.time = currentTime;
+        break;
+      }
+      case WM_MOUSEMOVE: {
+        if (lastEvent.type == WM_MOUSEMOVE &&
+            lastEvent.x == pMouseStruct->pt.x &&
+            lastEvent.y == pMouseStruct->pt.y) {
+          break;
+        }
+        std::cout <<"Mouse move (" << pMouseStruct->pt.x << "," << pMouseStruct->pt.y << ") time : " << currentTime << "\n";
+        lastEvent.type = WM_MOUSEMOVE;
+        lastEvent.x = pMouseStruct->pt.x;
+        lastEvent.y = pMouseStruct->pt.y;
+        lastEvent.time = currentTime;
         break;
       }
       }
