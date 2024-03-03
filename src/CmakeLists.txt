@@ -2,18 +2,15 @@
 file(GLOB LIBJOT_SOURCE_FILES
     "${LIBJOT_SOURCE_DIRECTORY}/*cc"
 )
-file(GLOB LIBJOT_HEADER_FILES
-    "${LIBJOT_SOURCE_DIRECTORY}/*h"
-)
 
 # create the object library
 add_library(LIBJOT_OBJECT OBJECT
     ${LIBJOT_SOURCE_FILES}
-    ${LIBJOT_HEADER_FILES}
 )
 set_target_properties(LIBJOT_OBJECT
     PROPERTIES
     POSITION_INDEPENDENT_CODE ON
+    INCLUDE_DIRECTORIES ${LIBJOT_HEADER_DIRECTORY}
 )
 
 # build the static library
@@ -46,10 +43,4 @@ if(LIBJOT_BUILD_SHARED)
         OUTPUT_NAME "JOT"
         SUFFIX ".dll"
     )
-endif()
-
-# copy the header files to the build directory
-if(LIBJOT_BUILD_FULL)
-    message("** Copying header files to ${LIBJOT_INCLUDE_OUTPUT_DIRECTORY} **")
-    file(COPY ${LIBJOT_HEADER_FILES} DESTINATION "${LIBJOT_INCLUDE_OUTPUT_DIRECTORY}")
 endif()

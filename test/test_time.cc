@@ -1,4 +1,4 @@
-#include "../src/JOT.h"
+#include "JOT.h"
 #include <iostream>
 
 int main (void) {

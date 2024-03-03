@@ -1,3 +1,4 @@
+#include <minwindef.h>
 #ifndef JOTMOUSEHOOK_H
 #define JOTMOUSEHOOK_H 1
 
@@ -60,6 +61,9 @@ private:
   MSG m_msg;
 };
 
+LRESULT CALLBACK base_hook_function(int nCode, WPARAM wParam, LPARAM lParam);
+void base_mouse_event(int nCode, WPARAM wParam, LPARAM lParam, void(*function)(MSLLHOOKSTRUCT *pMouseStruct));
+LRESULT CALLBACK printMouseEvent_test(int nCode, WPARAM wParam, LPARAM lParam);
 LRESULT CALLBACK printMouseEvent(int nCode, WPARAM wParam, LPARAM lParam);
 LRESULT CALLBACK printMouseEvent_high_res(int nCode, WPARAM wParam, LPARAM lParam);
 LRESULT CALLBACK printMouseEvent_high_res_stream(int nCode, WPARAM wParam, LPARAM lParam);

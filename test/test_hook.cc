@@ -1,4 +1,4 @@
-#include "../src/JOT.h"
+#include "JOT.h"
 
 int main (void) {
   JOT::base_hook &hook = JOT::base_hook::getInstance();

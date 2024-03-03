@@ -9,16 +9,16 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 # set the build options
 option(LIBJOT_BUILD_SHARED ON)
 option(LIBJOT_BUILD_STATIC ON)
-option(LIBJOT_BUILD_FULL ON)
 option(LIBJOT_TEST OFF)
 
 # set output directories
-set(LIBJOT_SOURCE_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/src")
-set(LIBJOT_TEST_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/test")
+set(LIBJOT_BASE_PATH "${CMAKE_CURRENT_SOURCE_DIR}")
+set(LIBJOT_SOURCE_DIRECTORY "${LIBJOT_BASE_PATH}/src")
+set(LIBJOT_HEADER_DIRECTORY "${LIBJOT_BASE_PATH}/include")
+set(LIBJOT_TEST_DIRECTORY "${LIBJOT_BASE_PATH}/test")
 set(LIBJOT_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}")
 set(LIBJOT_SHARED_OUTPUT_DIRECTORY "${LIBJOT_OUTPUT_DIRECTORY}/bin")
 set(LIBJOT_STATIC_OUTPUT_DIRECTORY "${LIBJOT_OUTPUT_DIRECTORY}/lib")
-set(LIBJOT_INCLUDE_OUTPUT_DIRECTORY "${LIBJOT_OUTPUT_DIRECTORY}/include")
 
 # print the build information
 message("\n")
@@ -28,20 +28,16 @@ message("** CMAKE_CXX_STANDARD_REQUIRED: ${CMAKE_CXX_STANDARD_REQUIRED}")
 message("** CMAKE_BUILD_TYPE: ${CMAKE_BUILD_TYPE}")
 message("** BUILD_SHARED_LIBS: ${LIBJOT_BUILD_SHARED}")
 message("** BUILD_STATIC_LIBS: ${LIBJOT_BUILD_STATIC}")
-message("** BUILD_FULL: ${LIBJOT_BUILD_FULL}")
 message("** LIBJOT_OUTPUT_DIRECTORY: ${LIBJOT_OUTPUT_DIRECTORY}")
 
-include_directories(${LIBJOT_SOURCE_DIRECTORY})
 add_subdirectory(${LIBJOT_SOURCE_DIRECTORY})
 
-message("*-----------END LIBJOT BUILD-----------*")
-
 # add the test directory
-
 if(LIBJOT_TEST)
     message("*----------START LIBJOT TEST-----------*")
     add_subdirectory(test)
     message("*-----------END LIBJOT TEST------------*")
 endif()
 
+message("*-----------END LIBJOT BUILD-----------*")
 message("\n")
